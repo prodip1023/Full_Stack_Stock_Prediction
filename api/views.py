@@ -11,7 +11,9 @@ from django.http import Http404
 from rest_framework import mixins,generics,viewsets
 from blogs.serializers import BlogSerializer,CommentSerializer
 from blogs.models import Blog,Comment
-
+from .pagination import CustomPagination
+from employees.filters import EmployeFilter
+from rest_framework.filters import SearchFilter,OrderingFilter
 
 
 
@@ -178,6 +180,10 @@ class EmployeeViewset(viewsets.ViewSet):
 class EmployeeViewset(viewsets.ModelViewSet):
     queryset = Employees.objects.all()
     serializer_class = EmployeeSerializer
+    pagination_class = CustomPagination
+    filterset_fields = ['employee_age']
+    filterset_class = EmployeFilter
+
 
 # router.register('employees', EmployeeViewset, basename='employee')
 
@@ -185,6 +191,9 @@ class EmployeeViewset(viewsets.ModelViewSet):
 class BlogsView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+    filter_backends = [SearchFilter,OrderingFilter]
+    search_fields = ['blog_title','blog_body']
+    ordering_fields = ['blog_title','blog_body']
 
 class CommentsView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
